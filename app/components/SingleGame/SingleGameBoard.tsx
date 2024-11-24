@@ -1,29 +1,33 @@
 'use client';
 
-import { CellIdentifier } from "../../constants";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { STTTGameActions, STTTGameSelectors } from "../STTTGameSlice";
-import { generateKey } from "../../helpers";
+import { useAppSelector } from "@/lib/hooks";
 import classNames from "classnames";
+import { CellIdentifier } from "../../constants";
+import { checkForGameEnd, generateKey, getGameWinnerName } from "../../helpers";
+import { STTTGameSelectors } from "../STTTGameSlice";
 import SingleGameCell from "./SingleGameCell";
 
 import styles from "./SingleGame.module.css";
+import WinnerOverlay from "./WinnerOverlay";
+import SelectGameButton from "../SelectGameButton";
+import { useMemo } from "react";
 
 type GameBoardProps = {
     cell: CellIdentifier;
 };
 
 const GameBoard = ({ cell: boardIndex }: GameBoardProps) => {
-    const dispatch = useAppDispatch();
-
     const board = useAppSelector(STTTGameSelectors.getSingleGameBoard(boardIndex));
     const boardIsSelected = useAppSelector(STTTGameSelectors.getIsThisBoardSelected(boardIndex));
 
-    const takeTurn = (turn: CellIdentifier) => {
-        dispatch(STTTGameActions.claimCell(turn));
-    };
-
     const boardId = generateKey('SPGB', `row-${boardIndex.row}`, `col-${boardIndex.col}`);
+
+
+    const winner = useMemo(() => {
+        const gameResult = checkForGameEnd(board);
+        return getGameWinnerName(gameResult);
+    }, [board]);
+
 
     const classes = [styles.gameBoard];
     if (boardIsSelected) {
@@ -31,20 +35,24 @@ const GameBoard = ({ cell: boardIndex }: GameBoardProps) => {
     }
 
     return (
-        <div className={classNames(classes)}>
-            {board.map((row, rowIndex) => (
-                <div className={styles.row} key={generateKey(boardId, 'SIGB', `row-${rowIndex}`)}>
-                    {row.map((cell, colIndex) => (
-                        <SingleGameCell
-                            key={generateKey(boardId, 'SIGB', `row-${rowIndex}`, `col-${colIndex}`)}
-                            cell={{ row: rowIndex, col: colIndex }}
-                            parentBoard={boardIndex}
-                            value={cell}
-                        />
-                    ))}
-                </div>
-            ))}
-        </div>
+        <>
+            <div className={classNames(classes)}>
+                {board.map((row, rowIndex) => (
+                    <div className={styles.row} key={generateKey(boardId, 'SIGB', `row-${rowIndex}`)}>
+                        {row.map((cell, colIndex) => (
+                            <SingleGameCell
+                                key={generateKey(boardId, 'SIGB', `row-${rowIndex}`, `col-${colIndex}`)}
+                                cell={{ row: rowIndex, col: colIndex }}
+                                parentBoard={boardIndex}
+                                value={cell}
+                            />
+                        ))}
+                    </div>
+                ))}
+                <WinnerOverlay winner={winner} />
+            </div>
+            <SelectGameButton cell={boardIndex} winner={winner} />
+        </>
     );
 }
 

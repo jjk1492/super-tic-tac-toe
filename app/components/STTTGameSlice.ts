@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AllPlayers, PLAYER_EMPTY, SingleGameBoard, CellIdentifier } from "../constants"
+import { AllPlayers, PLAYER_EMPTY, SingleGameBoard, CellIdentifier, PLAYER_X, PLAYER_O } from "../constants"
 import { buildSuperGameBoard, isValidCell } from "../helpers";
 import { RootState } from "@/lib/store";
 
@@ -12,7 +12,7 @@ export type STTTGameSliceState = {
 
 const initialState: STTTGameSliceState = {
     boards: buildSuperGameBoard(),
-    currentPlayer: 'X',
+    currentPlayer: PLAYER_X,
     selectedBoard: null,
     winner: null
 }
@@ -26,24 +26,28 @@ export const STTTGameSlice = createSlice({
 
             const { selectedBoard, currentPlayer, boards } = state;
             if (!selectedBoard) {
-                alert('Please select a board first');
-                return;
+                throw new Error('No board selected');
             }
 
             const selectedCell = boards[selectedBoard.row][selectedBoard.col];
             if (selectedCell[row][col] !== PLAYER_EMPTY) {
                 // Cell is already claimed
-                alert('Cell is already claimed');
                 return;
             }
 
             selectedCell[row][col] = currentPlayer;
         },
+        singleGameWon(state, action: PayloadAction<CellIdentifier>) {
+        },
+        gameOver(state, action: PayloadAction<AllPlayers>) {
+            state.winner = action.payload;
+            state.selectedBoard = null;
+        },
         selectBoard(state, action: PayloadAction<CellIdentifier | null>) {
             state.selectedBoard = action.payload;
         },
         switchPlayer(state) {
-            state.currentPlayer = state.currentPlayer === 'X' ? 'O' : 'X';
+            state.currentPlayer = state.currentPlayer === PLAYER_X ? PLAYER_O : PLAYER_X;
         }
     }
 });
@@ -54,6 +58,7 @@ export const STTTGameActions = STTTGameSlice.actions;
 const getCurrentPlayer = (state: RootState) => state.STTTGame.currentPlayer;
 const getSelectedBoard = (state: RootState) => state.STTTGame.selectedBoard;
 const getSuperGameBoard = (state: RootState) => state.STTTGame.boards;
+const getWinner = (state: RootState) => state.STTTGame.winner;
 
 /** Implied Selectors */
 const getGameHasBoardSelected = (state: RootState) => state.STTTGame.selectedBoard !== null;
@@ -84,5 +89,6 @@ export const STTTGameSelectors = {
     getSelectedBoard,
     getSelectedBoardGame,
     getSingleGameBoard,
-    getSuperGameBoard
+    getSuperGameBoard,
+    getWinner
 };

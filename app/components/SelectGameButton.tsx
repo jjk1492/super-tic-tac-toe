@@ -5,11 +5,13 @@ import { CellIdentifier } from "../constants";
 
 type SelectGameButtonProps = {
     cell: CellIdentifier;
+    winner: string | null;
 };
 
-const SelectGameButton = ({ cell }: SelectGameButtonProps) => {
+const SelectGameButton = ({ cell, winner }: SelectGameButtonProps) => {
     const dispatch = useAppDispatch();
     const someBoardIsSelected = useAppSelector(STTTGameSelectors.getGameHasBoardSelected);
+    const superGameWinner = useAppSelector(STTTGameSelectors.getWinner);
 
 
     const takeTurn = () => {
@@ -24,6 +26,7 @@ const SelectGameButton = ({ cell }: SelectGameButtonProps) => {
             onClick={takeTurn}
             className={styles.selectGameButton}
             aria-label={`Select game ${cell.row} ${cell.col}`}
+            disabled={Boolean(winner) || typeof superGameWinner === 'string'}
         />
     );
 }

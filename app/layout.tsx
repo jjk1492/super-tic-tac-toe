@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { StoreProvider } from "./StoreProvider";
 
-import SuperGameBoard from "./components/SuperGameBoard";
 import "./styles/index.css";
+import SuperTicTacToe from "./components/SuperTicTacToe";
 
 interface Props {
   readonly children: ReactNode;
@@ -13,7 +13,7 @@ export default function RootLayout({ children }: Props) {
     <StoreProvider>
       <html lang="en">
         <body>
-          <SuperGameBoard />
+          <SuperTicTacToe />
         </body>
       </html>
     </StoreProvider>

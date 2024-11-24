@@ -35,7 +35,6 @@ const SuperGameBoard = () => {
                             className={styles.cell}
                         >
                             <SingleGameBoard cell={{ row: rowIndex, col: colIndex }} />
-                            <SelectGameButton cell={{ row: rowIndex, col: colIndex }} />
                         </div>
                     ))}
                 </div>

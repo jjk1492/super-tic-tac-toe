@@ -17,21 +17,7 @@ export const addAppListener = addListener.withTypes<RootState, AppDispatch>()
 startAppListening({
     actionCreator: STTTGameActions.claimCell,
     effect: (action, listenerApi) => {
-        const state = listenerApi.getState();
         const { row, col } = action.payload;
-
-        const selectedBoardGame = STTTGameSelectors.getSelectedBoardGame(state);
-
-        if (selectedBoardGame) {
-            const isGameComplete = checkForGameEnd(selectedBoardGame);
-            if (typeof isGameComplete === 'string') {
-                if (isGameComplete === '') {
-                    alert('It\'s a draw!');
-                }
-                alert(`Player ${isGameComplete} wins!`);
-            }
-        }
-
         // switch players
         listenerApi.dispatch(STTTGameActions.switchPlayer());
 
@@ -54,6 +40,21 @@ startAppListening({
         
         if (typeof checkForGameEnd(selectedBoardGame) === 'string') {
             listenerApi.dispatch(STTTGameActions.selectBoard(null));
+        }
+    }
+})
+
+// Check for entire game completion
+startAppListening({
+    actionCreator: STTTGameActions.claimCell,
+    effect: (action, listenerApi) => {
+        const state = listenerApi.getState();
+        const gameBoard = STTTGameSelectors.getSuperGameBoard(state);
+        const solvedGameBoard = gameBoard.map(row => row.map(cell => checkForGameEnd(cell)));
+
+        const winner = checkForGameEnd(solvedGameBoard);
+        if (typeof winner === 'string') {
+            listenerApi.dispatch(STTTGameActions.gameOver(winner));
         }
     }
 })

@@ -1,6 +1,7 @@
 .gameBoard {
     /* Parent styles */
     background-color: var(--taupe-gray);
+    position: relative;
     &.selected {
         background-color: var(--platinum);
     }
@@ -17,6 +18,30 @@
         text-align: center;
         line-height: 50px;
         font-size: 24px;
+    }
+
+    & .winnerOverlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 150px;
+        color: var(--color-warning);
+
+        &.winnerX {
+            color: var(--aquamarine);
+        }
+        &.winnerO {
+            color: var(--periwinkle);
+        }
+        &.winnerT {
+            color: var(--yellow);
+        }
     }
     
 }
