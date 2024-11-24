@@ -1,0 +1,26 @@
+:root {
+    --black: #000;
+    --dim-gray: #2F2F2F;
+    --taupe-gray: #9999A1;
+    --platinum: #E6E6E9;
+    --anti-flash-white: #F4F4F6;
+    --white: #FFFFFF;
+
+    --dark-spring-green: #2C6E49;
+    --yellow: #F6F930;
+    --light-coral: #EF6F6C;
+    --cerulean: #00A2E8;
+    --aquamarine: #5DFDCB;
+    --periwinkle: #C7B8EA;
+
+    --color-text: var(--dim-gray);
+    --color-background: var(--platinum);
+
+    --color-success: var(--dark-spring-green);
+    --color-warning: var(--yellow);
+    --color-danger: var(--light-coral);
+    --color-info: var(--cerulean);
+
+    --color-player-x: var(--aquamarine);
+    --color-player-o: var(--periwinkle);
+}

@@ -1,0 +1,18 @@
+.superBoard {
+    & .row {
+        display: flex;
+
+        & .cell {
+            border: 1px solid #000;
+            position: relative;
+
+            & .selectGameButton {
+                position: absolute;
+                top: 0;
+                right: 0;
+                height: 100%;
+                width: 100%;
+            }
+        }
+    }
+}
