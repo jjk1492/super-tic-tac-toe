@@ -21,9 +21,6 @@ export const STTTGameSlice = createSlice({
     name: 'STTTGame',
     initialState,
     reducers: {
-        selectBoard(state, action: PayloadAction<CellIdentifier>) {
-            state.selectedBoard = action.payload;
-        },
         claimCell(state, action: PayloadAction<CellIdentifier>) {
             const { row, col } = action.payload;
 
@@ -41,8 +38,12 @@ export const STTTGameSlice = createSlice({
             }
 
             selectedCell[row][col] = currentPlayer;
-            state.selectedBoard = { row, col };
-            state.currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        },
+        selectBoard(state, action: PayloadAction<CellIdentifier | null>) {
+            state.selectedBoard = action.payload;
+        },
+        switchPlayer(state) {
+            state.currentPlayer = state.currentPlayer === 'X' ? 'O' : 'X';
         }
     }
 });
@@ -57,13 +58,20 @@ const getSuperGameBoard = (state: RootState) => state.STTTGame.boards;
 /** Implied Selectors */
 const getGameHasBoardSelected = (state: RootState) => state.STTTGame.selectedBoard !== null;
 const getIsThisBoardSelected = (board: CellIdentifier) => (state: RootState) => {
-    if(!isValidCell(board)) {
+    if (!isValidCell(board)) {
         throw new Error('Invalid cell selection');
     }
     return state.STTTGame.selectedBoard?.row === board.row && state.STTTGame.selectedBoard?.col === board.col;
 }
+const getSelectedBoardGame = (state: RootState) => {
+    const selectedBoard = state.STTTGame.selectedBoard;
+    if (!selectedBoard) {
+        return null;
+    }
+    return state.STTTGame.boards[selectedBoard.row][selectedBoard.col];
+}
 const getSingleGameBoard = (board: CellIdentifier) => (state: RootState) => {
-    if(!isValidCell(board)) {
+    if (!isValidCell(board)) {
         throw new Error('Invalid cell selection');
     }
     return state.STTTGame.boards[board.row][board.col];
@@ -74,6 +82,7 @@ export const STTTGameSelectors = {
     getGameHasBoardSelected,
     getIsThisBoardSelected,
     getSelectedBoard,
+    getSelectedBoardGame,
     getSingleGameBoard,
     getSuperGameBoard
 };

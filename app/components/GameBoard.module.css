@@ -12,6 +12,12 @@
                 right: 0;
                 height: 100%;
                 width: 100%;
+                background: transparent;
+
+                &:hover {
+                    background: rgba(0, 0, 0, 0.1);
+                    cursor: pointer;
+                }
             }
         }
     }
