@@ -9,7 +9,7 @@ import SingleGameCell from "./SingleGameCell";
 
 import styles from "./SingleGame.module.css";
 import WinnerOverlay from "./WinnerOverlay";
-import SelectGameButton from "../SelectGameButton";
+import SelectGameButton from "./SelectGameButton";
 import { useMemo } from "react";
 
 type GameBoardProps = {

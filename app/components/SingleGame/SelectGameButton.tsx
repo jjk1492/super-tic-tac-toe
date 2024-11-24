@@ -1,7 +1,9 @@
+'use client';
+
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import styles from "./GameBoard.module.css";
-import { STTTGameSelectors, STTTGameActions } from "./STTTGameSlice";
-import { CellIdentifier } from "../constants";
+import { CellIdentifier } from "../../constants";
+import { STTTGameActions, STTTGameSelectors } from "../STTTGameSlice";
+import styles from "./SingleGame.module.css";
 
 type SelectGameButtonProps = {
     cell: CellIdentifier;

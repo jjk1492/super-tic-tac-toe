@@ -1,13 +1,12 @@
 
 'use client';
 
-import SingleGameBoard from "./SingleGame/SingleGameBoard";
 import { useAppSelector } from "@/lib/hooks";
-import { STTTGameSelectors } from "./STTTGameSlice";
-import { generateKey } from "../helpers";
+import { generateKey } from "../../helpers";
+import SingleGameBoard from "../SingleGame/SingleGameBoard";
+import { STTTGameSelectors } from "../STTTGameSlice";
 
-import styles from "./GameBoard.module.css";
-import SelectGameButton from "./SelectGameButton";
+import styles from "./SuperGame.module.css";
 
 /**
  * Control board for a game of super tic-tac-toe.

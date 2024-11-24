@@ -1,5 +1,5 @@
 import { useAppSelector } from "@/lib/hooks"
-import { STTTGameSelectors } from "./STTTGameSlice";
+import { STTTGameSelectors } from "../STTTGameSlice";
 
 const GameWinner = () => {
     const winner = useAppSelector(STTTGameSelectors.getWinner);

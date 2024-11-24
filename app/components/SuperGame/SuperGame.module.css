@@ -1,0 +1,10 @@
+.superBoard {
+    & .row {
+        display: flex;
+
+        & .cell {
+            border: 1px solid #000;
+            position: relative;
+        }
+    }
+}
