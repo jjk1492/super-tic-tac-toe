@@ -1,10 +1,10 @@
-import { AllPlayers, GamePlayers, PLAYER_EMPTY, SingleGameBoard, CellIdentifier, SolvedSuperGameBoard, PLAYER_X, PLAYER_O } from "./constants";
+import { AllPlayers, PLAYER_EMPTY, SingleGameBoard, CellIdentifier, SolvedSuperGameBoard, PLAYER_X, PLAYER_O } from "./constants";
 
 export const buildSingleGameBoard = (): SingleGameBoard => (
     [
-        ['', '', ''],
-        ['', '', ''],
-        ['', '', '']
+        [PLAYER_EMPTY, PLAYER_EMPTY, PLAYER_EMPTY],
+        [PLAYER_EMPTY, PLAYER_EMPTY, PLAYER_EMPTY],
+        [PLAYER_EMPTY, PLAYER_EMPTY, PLAYER_EMPTY]
     ]
 );
 export const buildSuperGameBoard = (): SingleGameBoard[][] => (

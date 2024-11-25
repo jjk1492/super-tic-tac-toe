@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AllPlayers, PLAYER_EMPTY, SingleGameBoard, CellIdentifier, PLAYER_X, PLAYER_O } from "../constants"
+import { AllPlayers, PLAYER_EMPTY, SingleGameBoard, CellIdentifier, PLAYER_X, PLAYER_O, GameType } from "../constants"
 import { buildSuperGameBoard, isValidCell } from "../helpers";
 import { RootState } from "@/lib/store";
 
@@ -8,13 +8,15 @@ export type STTTGameSliceState = {
     currentPlayer: AllPlayers;
     selectedBoard: { row: number, col: number } | null;
     winner: AllPlayers | null;
+    gameType: GameType | null;
 }
 
 const initialState: STTTGameSliceState = {
     boards: buildSuperGameBoard(),
     currentPlayer: PLAYER_X,
     selectedBoard: null,
-    winner: null
+    winner: null,
+    gameType: null
 }
 
 export const STTTGameSlice = createSlice({
@@ -37,7 +39,8 @@ export const STTTGameSlice = createSlice({
 
             selectedCell[row][col] = currentPlayer;
         },
-        singleGameWon(state, action: PayloadAction<CellIdentifier>) {
+        newGame(state) {
+            state = initialState;
         },
         gameOver(state, action: PayloadAction<AllPlayers>) {
             state.winner = action.payload;
@@ -45,6 +48,9 @@ export const STTTGameSlice = createSlice({
         },
         selectBoard(state, action: PayloadAction<CellIdentifier | null>) {
             state.selectedBoard = action.payload;
+        },
+        setGameType(state, action: PayloadAction<GameType>) {
+            state.gameType = action.payload;
         },
         switchPlayer(state) {
             state.currentPlayer = state.currentPlayer === PLAYER_X ? PLAYER_O : PLAYER_X;

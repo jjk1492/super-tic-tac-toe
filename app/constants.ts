@@ -8,3 +8,17 @@ export type GamePlayers = typeof PLAYER_X | typeof PLAYER_O;
 export type SingleGameBoard = AllPlayers[][];
 export type SolvedSuperGameBoard = (AllPlayers | null)[][];
 export type CellIdentifier = { row: number, col: number };
+
+export const GameTypes = {
+    "LOCAL": "LOCAL",
+    "MULTIPLAYER": "MULTIPLAYER",
+} as const;
+export type GameType = typeof GameTypes[keyof typeof GameTypes];
+
+export const MultiplayerLayouts = {
+    "CREATE_GAME": "CREATE_GAME",
+    "JOIN_GAME": "JOIN_GAME",
+    "WAITING_ROOM": "WAITING_ROOM",
+    "GAME": "GAME",
+};
+export type MultiplayerLayout = typeof MultiplayerLayouts[keyof typeof MultiplayerLayouts];

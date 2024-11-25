@@ -13,7 +13,7 @@ export default function RootLayout({ children }: Props) {
     <StoreProvider>
       <html lang="en">
         <body>
-          <SuperTicTacToe />
+          {children}
         </body>
       </html>
     </StoreProvider>

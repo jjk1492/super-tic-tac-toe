@@ -3,12 +3,14 @@ import { createListenerMiddleware, addListener } from '@reduxjs/toolkit'
 import type { RootState, AppDispatch } from './store'
 import { STTTGameActions, STTTGameSelectors } from '@/app/components/STTTGameSlice'
 import { checkForGameEnd } from '@/app/helpers'
+import { MultiplayerActions, MultiplayerSelectors } from '@/app/multiplayer/state'
+import { socket } from './socket'
 
 export const listenerMiddleware = createListenerMiddleware()
 
 export const startAppListening = listenerMiddleware.startListening.withTypes<
-  RootState,
-  AppDispatch
+    RootState,
+    AppDispatch
 >()
 
 export const addAppListener = addListener.withTypes<RootState, AppDispatch>()
@@ -32,12 +34,12 @@ startAppListening({
     actionCreator: STTTGameActions.selectBoard,
     effect: (action, listenerApi) => {
         const state = listenerApi.getState();
-        if(!action.payload) {
+        if (!action.payload) {
             return;
         }
 
         const selectedBoardGame = STTTGameSelectors.getSingleGameBoard(action.payload)(state);
-        
+
         if (typeof checkForGameEnd(selectedBoardGame) === 'string') {
             listenerApi.dispatch(STTTGameActions.selectBoard(null));
         }
@@ -57,4 +59,59 @@ startAppListening({
             listenerApi.dispatch(STTTGameActions.gameOver(winner));
         }
     }
-})
+});
+
+// create websocket connection when multiplayer game is created
+startAppListening({
+    actionCreator: MultiplayerActions.createGame,
+    effect: (action, listenerApi) => {
+        const state = listenerApi.getState();
+        const currentPlayer = MultiplayerSelectors.getCurrentPlayer(state);
+        const gameID = MultiplayerSelectors.getGameId(state);
+        if (!currentPlayer) {
+            return;
+        }
+
+        socket.on('message', (message) => {
+            console.log('Received message:', message);
+            const parsedMessage = JSON.parse(message);
+            const { type, payload } = parsedMessage;
+            switch (type) {
+                case 'game_created':
+                    listenerApi.dispatch(MultiplayerActions.connectionEstablished({
+                        player: {
+                            id: payload.playerId,
+                            username: currentPlayer.username
+                        },
+                        gameId: payload.gameId
+                    }));
+                    break;
+                case 'game_joined':
+                    listenerApi.dispatch(MultiplayerActions.connectionEstablished({
+                        player: {
+                            id: payload.playerId,
+                            username: currentPlayer.username
+                        },
+                        gameId: payload.gameId
+                    }));
+                    break;
+                case 'player_joined':
+                    listenerApi.dispatch(MultiplayerActions.playerConnected({
+                        id: payload.playerId,
+                        username: payload.username
+                    }));
+                    break;
+                default:
+                    console.log('Unknown message type:', type);
+            }
+        });
+
+        socket.send(JSON.stringify({
+            type: 'create_game',
+            payload: {
+                gameID,
+                username: currentPlayer.username
+            }
+        }));
+    }
+});
