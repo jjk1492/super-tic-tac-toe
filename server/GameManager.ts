@@ -34,14 +34,25 @@ class GameManager {
         return this.games[id];
     }
 
+    getPlayer(id: string, gameId: string) {
+        const game = this.games[gameId];
+        return game.players.find(player => player.id === id);
+    }
+
     /**
      * Ends a game by disconnecting all players and removing the game from the list
      */
     endGame(id: string) {
         const game = this.games[id];
+        if (!game) {
+            throw new Error('Game not found');
+        }
+        // destroy sockets BEFORE deleting the game
+        // otherwise we lose the reference to the sockets and can't disconnect them
         game.players.forEach(player => {
             player.socket.disconnect();
         });
+
         delete this.games[id];
     }
 }

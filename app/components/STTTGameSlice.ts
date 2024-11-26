@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AllPlayers, PLAYER_EMPTY, SingleGameBoard, CellIdentifier, PLAYER_X, PLAYER_O, GameType } from "../constants"
+import { AllPlayers, PLAYER_EMPTY, SingleGameBoard, CellIdentifier, PLAYER_X, PLAYER_O, GameType, GamePlayers } from "../constants"
 import { buildSuperGameBoard, isValidCell } from "../helpers";
 import { RootState } from "@/lib/store";
 
@@ -24,6 +24,22 @@ export const STTTGameSlice = createSlice({
     initialState,
     reducers: {
         claimCell(state, action: PayloadAction<CellIdentifier>) {
+            const { row, col } = action.payload;
+
+            const { selectedBoard, currentPlayer, boards } = state;
+            if (!selectedBoard) {
+                throw new Error('No board selected');
+            }
+
+            const selectedCell = boards[selectedBoard.row][selectedBoard.col];
+            if (selectedCell[row][col] !== PLAYER_EMPTY) {
+                // Cell is already claimed
+                return;
+            }
+
+            selectedCell[row][col] = currentPlayer;
+        },
+        cellClaimed(state, action: PayloadAction<CellIdentifier>) {
             const { row, col } = action.payload;
 
             const { selectedBoard, currentPlayer, boards } = state;

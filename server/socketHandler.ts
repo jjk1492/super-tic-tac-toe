@@ -1,28 +1,12 @@
 import { Socket } from "socket.io";
 import * as GameService from "./gameService";
+import { WebSocketMessage } from "./types";
 
-type CreateGame = {
-    type: 'create_game';
-    payload: {
-        username: string;
-    }
-}
-type JoinGame = {
-    type: 'join_game';
-    payload: {
-        gameId: string;
-        username: string;
-    }
-};
-type AnyMessage = {
-    type: string;
-    payload: any;
-}
-
-export function handleSocketMessage(socket: Socket, message: CreateGame | AnyMessage) {
+// only responsible for sending messages to the specific socket that sent the message
+export function handleSocketMessage(socket: Socket, message: WebSocketMessage) {
     switch (message.type) {
         case 'create_game': {
-            console.log('Creating game with username:', message.payload.username);
+            console.log('Creating game', message);
             const { game, player } = GameService.createGame({ username: message.payload.username }, socket);
             console.log('Game created:', game);
 
@@ -36,22 +20,20 @@ export function handleSocketMessage(socket: Socket, message: CreateGame | AnyMes
             return;
         }
         case 'join_game': {
-            console.log('Joining game with username:', message.payload.username);
+            console.log('Joining game', message);
             try {
                 const { game, player } = GameService.joinGame(message.payload.gameId, { username: message.payload.username }, socket);
-                console.log('Game joined:', game.id);
+                const opponent = GameService.getOpponent(player.id, game.id);
+
                 socket.send(JSON.stringify({
                     type: 'game_joined',
                     payload: {
                         gameId: game.id,
-                        playerId: player.id
-                    }
-                }));
-                game.players[0].socket.send(JSON.stringify({
-                    type: 'player_joined',
-                    payload: {
                         playerId: player.id,
-                        username: player.username
+                        opponent: {
+                            id: opponent?.id,
+                            username: opponent?.username
+                        }
                     }
                 }));
             } catch (e) {
@@ -63,6 +45,11 @@ export function handleSocketMessage(socket: Socket, message: CreateGame | AnyMes
                     }
                 }));
             }
+            break;
+        }
+        case 'turn_taken': {
+            console.log('Turn taken by player', message);
+            GameService.takeTurn(message.payload.gameId, message.payload.playerId, message.payload.board, message.payload.cell);
             break;
         }
         default:

@@ -1,24 +1,24 @@
 import { RootState } from "@/lib/store";
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { MultiplayerLayout, MultiplayerLayouts } from "../constants";
-import { createSelectorHook } from "react-redux";
-import { v4 as uuidv4 } from 'uuid';
+import { GamePlayers, MultiplayerLayouts, PLAYER_O, PLAYER_X } from "../constants";
+import { STTTGameSelectors } from "../components/STTTGameSlice";
 
 type Player = {
     id?: string;
-    username: string;
+    username?: string;
+    team?: GamePlayers;
 };
 
 type MultiplayerState = {
     id: string | null;
     connectedPlayers: Player[];
-    currentPlayer: Player | null;
+    loggedInPlayer: Player;
 };
 
 const initialState: MultiplayerState = {
     id: null,
     connectedPlayers: [],
-    currentPlayer: null
+    loggedInPlayer: {},
 };
 
 
@@ -27,29 +27,26 @@ export const multiplayerSlice = createSlice({
     initialState: initialState,
     reducers: {
         connectionEstablished: (state, action: PayloadAction<{ player: Player, gameId: string }>) => {
-            if(!state.currentPlayer) {
-                throw new Error('Current player not set');
-            }
-
-            state.currentPlayer.id = action.payload.player.id;
+            state.loggedInPlayer!.id = action.payload.player.id;
             state.connectedPlayers.push(action.payload.player);
             state.id = action.payload.gameId;
         },
-        createGame: (state, action: PayloadAction<string | undefined>) => {},
+        createGame: (state, action: PayloadAction<string | undefined>) => {
+            state.loggedInPlayer.team = PLAYER_X;
+        },
         disconnect: (state, action: PayloadAction<Player>) => {
             state.connectedPlayers = state.connectedPlayers.filter(player => player.id !== action.payload.id);
         },
-        joinGame: (state, action: PayloadAction<{gameId: string, username: string}>) => {},
+        joinGame: (state, action: PayloadAction<{ gameId: string, username: string }>) => { 
+            state.loggedInPlayer.team = PLAYER_O;
+        },
         playerConnected: (state, action: PayloadAction<Player>) => {
             state.connectedPlayers.push(action.payload);
         },
         setUsername: (state, action: PayloadAction<string>) => {
-            if(!state.currentPlayer) {
-                state.currentPlayer = {
-                    username: action.payload
-                };
-                  return;
-            }
+            state.loggedInPlayer = {
+                username: action.payload
+            };
         }
     }
 });
@@ -57,39 +54,48 @@ export const multiplayerSlice = createSlice({
 export const MultiplayerActions = multiplayerSlice.actions;
 
 const getConnectedPlayers = (state: RootState) => state.multiplayer.connectedPlayers;
-const getCurrentPlayer = (state: RootState) => state.multiplayer.currentPlayer;
+const getLoggedInPlayer = (state: RootState) => state.multiplayer.loggedInPlayer;
 const getGameId = (state: RootState) => state.multiplayer.id;
-const getUsername = (state: RootState) => state.multiplayer.currentPlayer?.username;
+const getUsername = (state: RootState) => state.multiplayer.loggedInPlayer?.username;
 
 /* Implement selectors */
+const getIsInMultiplayerGame = (state: RootState) => {
+    return Boolean(state.multiplayer.id);
+}
 const getIsCurrentPlayerConnected = (state: RootState) => {
-    return Boolean(state.multiplayer.currentPlayer?.id && state.multiplayer.id);
+    return Boolean(state.multiplayer.loggedInPlayer?.id && state.multiplayer.id);
 }
 const getAllPlayersAreConnected = (state: RootState) => {
     return state.multiplayer.connectedPlayers.length === 2;
 }
-const getMultiplayerLayout = (state: RootState) => {
-    const connectedPlayers = getConnectedPlayers(state);
-    const isCurrentPlayerConnected = getIsCurrentPlayerConnected(state);
-
-    if (connectedPlayers.length === 2) {
-        return MultiplayerLayouts.GAME;
+const getMultiplayerLayout = createSelector(
+    [getConnectedPlayers, getIsCurrentPlayerConnected],
+    (connectedPlayers, isCurrentPlayerConnected) => {
+        if (connectedPlayers.length === 2) {
+            return MultiplayerLayouts.GAME;
+        }
+        if (isCurrentPlayerConnected) {
+            return MultiplayerLayouts.WAITING_ROOM;
+        }
+        if (connectedPlayers.length === 1) {
+            return MultiplayerLayouts.JOIN_GAME;
+        }
+        return MultiplayerLayouts.CREATE_GAME;
     }
-    if (isCurrentPlayerConnected) {
-        return MultiplayerLayouts.WAITING_ROOM;
-    }
-    if (connectedPlayers.length === 1) {
-        return MultiplayerLayouts.JOIN_GAME;
-    }
-    return MultiplayerLayouts.CREATE_GAME;
-}
+);
+const getCanTakeTurn = createSelector(
+    [STTTGameSelectors.getCurrentPlayer, getLoggedInPlayer, getIsInMultiplayerGame],
+    (currentPlayer, loggedInPlayer, isInMultiplayerGame) => !isInMultiplayerGame || currentPlayer === loggedInPlayer.team
+);
 
 export const MultiplayerSelectors = {
     getAllPlayersAreConnected,
+    getCanTakeTurn,
     getConnectedPlayers,
-    getCurrentPlayer,
     getGameId,
     getIsCurrentPlayerConnected,
+    getIsInMultiplayerGame,
+    getLoggedInPlayer,
     getMultiplayerLayout,
     getUsername
 }

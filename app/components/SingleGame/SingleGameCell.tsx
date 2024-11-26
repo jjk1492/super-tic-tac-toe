@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 
 import styles from "./SingleGame.module.css";
 import { STTTGameActions, STTTGameSelectors } from "../STTTGameSlice";
+import { MultiplayerSelectors } from "@/app/multiplayer/state";
 
 type SingleGameCellProps = {
     cell: CellIdentifier;
@@ -15,8 +16,13 @@ type SingleGameCellProps = {
 const SingleGameCell = ({ cell, parentBoard, value }: SingleGameCellProps) => {
     const parentBoardIsSelected = useAppSelector(STTTGameSelectors.getIsThisBoardSelected(parentBoard));
     const dispatch = useAppDispatch();
+    const canTakeTurn = useAppSelector(MultiplayerSelectors.getCanTakeTurn);
 
     const claimCell = () => {
+        if(!canTakeTurn) {
+            alert('It is not your turn');
+            return;
+        }
         dispatch(STTTGameActions.claimCell(cell));
     };
 

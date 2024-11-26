@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next",
+    "dev:client": "next",
     "build": "next build",
     "start": "next start",
     "dev:server": "npx tsx server/app.ts"
