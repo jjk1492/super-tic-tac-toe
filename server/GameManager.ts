@@ -10,16 +10,6 @@ class GameManager {
         this.games = {}
     }
 
-    createGame(player: Player) {
-        const game = {
-            id: uuidv4(),
-            players: [player]
-        }
-        this.games[game.id] = game;
-
-        return game;
-    }
-
     addPlayerToGame(gameId: string, player: Player) {
         if (!this.games[gameId]) {
             throw new Error('Game not found');
@@ -30,13 +20,14 @@ class GameManager {
         this.games[gameId].players.push(player);
     }
 
-    getGame(id: string) {
-        return this.games[id];
-    }
+    createGame(player: Player) {
+        const game = {
+            id: uuidv4(),
+            players: [player]
+        }
+        this.games[game.id] = game;
 
-    getPlayer(id: string, gameId: string) {
-        const game = this.games[gameId];
-        return game.players.find(player => player.id === id);
+        return game;
     }
 
     /**
@@ -54,6 +45,31 @@ class GameManager {
         });
 
         delete this.games[id];
+    }
+
+    getGame(id: string) {
+        return this.games[id];
+    }
+
+    getPlayer(id: string, gameId: string) {
+        const game = this.games[gameId];
+        return game?.players.find(player => player.id === id);
+    }
+
+    getPlayerBySocketId(socketId: string) {
+        const game = Object.values(this.games).find(game => game.players.some(player => player.socket.id === socketId));
+        if (!game) {
+            return null;
+        }
+        return game.players.find(player => player.socket.id === socketId);
+    }
+
+    removePlayerFromGame(playerId: string, gameId: string) {
+        const game = this.games[gameId];
+        game.players = game.players.filter(player => player.id !== playerId);
+        if (game.players.length === 0) {
+            this.endGame(gameId);
+        }
     }
 }
 

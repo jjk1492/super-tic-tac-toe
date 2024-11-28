@@ -19,6 +19,18 @@ export type Game = {
     players: Player[];
 }
 
+type ChatMessage = {
+    sender: Pick<Player, 'id' | 'username'>;
+    message: string;
+};
+
+const STTTG_MESSAGE_TYPES = {
+    CREATE_GAME: 'create_game',
+    JOIN_GAME: 'join_game',
+    TURN_TAKE: 'turn_taken',
+    SEND_MESSAGE: 'send_message',
+}
+export type StttgMessageType = typeof STTTG_MESSAGE_TYPES[keyof typeof STTTG_MESSAGE_TYPES];
 
 export type CreateGame = {
     type: 'create_game';
@@ -50,10 +62,17 @@ export type TurnTaken = {
     }
 };
 
+export type SendMessage = {
+    type: 'send_message';
+    payload: {
+        message: string;
+    }
+};
+
 export type AnyMessage = {
     type: string;
     payload: any;
 };
 
 
-export type WebSocketMessage = CreateGame | JoinGame | TurnTaken | AnyMessage;
+export type WebSocketMessage = CreateGame | JoinGame | TurnTaken | SendMessage | AnyMessage;

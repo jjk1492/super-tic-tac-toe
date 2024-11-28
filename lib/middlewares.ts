@@ -73,7 +73,7 @@ const initializeGameConnectionListeners = (socket: Socket, listenerApi: Listener
 
     socket.on('message', (dirtyMessage: string) => {
         const message: WebSocketMessage = JSON.parse(dirtyMessage);
-        console.log('Received message:', message);
+        console.log('Received websocket message:', message);
         switch (message.type) {
             case 'game_created':
                 listenerApi.dispatch(MultiplayerActions.connectionEstablished({
@@ -114,6 +114,15 @@ const initializeGameConnectionListeners = (socket: Socket, listenerApi: Listener
                     id: message.payload.playerId,
                     username: message.payload.username
                 }));
+                break;
+            case 'message_received':
+                listenerApi.dispatch(MultiplayerActions.messageReceived({
+                    sender: message.payload.sender,
+                    message: message.payload.message
+                }));
+                break;
+            case 'player_left':
+                listenerApi.dispatch(MultiplayerActions.playerDisconnected(message.payload.player));
                 break;
             default:
                 console.log('Unknown message type:', message.type);
@@ -188,3 +197,15 @@ startAppListening({
         }));
     }
 });
+
+startAppListening({
+    actionCreator: MultiplayerActions.sendMessage,
+    effect: (action) => {
+        socket.send(JSON.stringify({
+            type: 'send_message',
+            payload: {
+                message: action.payload
+            }
+        }));
+    }
+})

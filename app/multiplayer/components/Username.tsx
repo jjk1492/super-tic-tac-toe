@@ -4,7 +4,7 @@ import { MultiplayerActions } from "../state";
 function Username() {
     const dispatch = useAppDispatch();
     const validateUsername = (username: string) => {
-        return /^[a-zA-Z0-9]+$/.test(username);
+        return /^[a-zA-Z0-9\s]+$/.test(username);
     };
 
     const handleUsernameBlur = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -20,7 +20,7 @@ function Username() {
     return (
         <label>
             <span>Create a username</span>
-            <input type="text" placeholder="Letters and numbers allowed" onBlur={handleUsernameBlur} />
+            <input className="form-control" type="text" placeholder="Letters and numbers allowed" onBlur={handleUsernameBlur} />
         </label>
     )
 }

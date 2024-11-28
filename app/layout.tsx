@@ -1,19 +1,21 @@
-import type { ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 import { StoreProvider } from "./StoreProvider";
-
+import Navbar from "./components/Navbar";
+import "react-toastify/dist/ReactToastify.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/index.css";
-import SuperTicTacToe from "./components/SuperTicTacToe";
+import { ToastContainer } from "react-toastify";
 
-interface Props {
-  readonly children: ReactNode;
-}
+type RootProps = {};
 
-export default function RootLayout({ children }: Props) {
+export default function RootLayout({ children }: PropsWithChildren<RootProps>) {
   return (
     <StoreProvider>
       <html lang="en">
         <body>
+          <Navbar />
           {children}
+          <ToastContainer />
         </body>
       </html>
     </StoreProvider>

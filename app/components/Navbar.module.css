@@ -1,0 +1,37 @@
+.navbar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border-bottom: 1px solid var(--black);
+    background-color: var(--dim-gray);
+    z-index: 1;
+
+    & ul {
+        display: flex;
+        list-style: none;
+        margin: 0px;
+        padding: 0px;
+
+        & li {
+            margin: 0px;
+            padding: 10px;
+            position: relative;
+
+            border-right: 1px solid var(--black);
+
+            &:hover {
+                cursor: pointer;
+            }
+            &:hover,
+            &:focus {
+                background-color: var(--black);
+            }
+
+            & a {
+                text-decoration: none;
+                color: var(--platinum);
+            }
+        }
+    }
+}

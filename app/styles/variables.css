@@ -23,4 +23,7 @@
 
     --color-player-x: var(--aquamarine);
     --color-player-o: var(--periwinkle);
+
+
+    --font-family: 'Roboto', sans-serif;
 }

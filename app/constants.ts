@@ -9,6 +9,18 @@ export type SingleGameBoard = AllPlayers[][];
 export type SolvedSuperGameBoard = (AllPlayers | null)[][];
 export type CellIdentifier = { row: number, col: number };
 
+
+export type Player = {
+    id?: string;
+    username?: string;
+    team?: GamePlayers;
+};
+
+export type Message = {
+    sender: Pick<Player, 'id' | 'username'>;
+    message: string;
+}
+
 export const GameTypes = {
     "LOCAL": "LOCAL",
     "MULTIPLAYER": "MULTIPLAYER",

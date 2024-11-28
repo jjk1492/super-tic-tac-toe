@@ -1,24 +1,22 @@
 import { RootState } from "@/lib/store";
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { GamePlayers, MultiplayerLayouts, PLAYER_O, PLAYER_X } from "../constants";
+import { Message, MultiplayerLayouts, Player, PLAYER_O, PLAYER_X } from "../constants";
 import { STTTGameSelectors } from "../components/STTTGameSlice";
+import { playerDisconnected } from "@/server/gameService";
 
-type Player = {
-    id?: string;
-    username?: string;
-    team?: GamePlayers;
-};
 
 type MultiplayerState = {
     id: string | null;
     connectedPlayers: Player[];
     loggedInPlayer: Player;
+    messages: Message[];
 };
 
 const initialState: MultiplayerState = {
     id: null,
     connectedPlayers: [],
     loggedInPlayer: {},
+    messages: []
 };
 
 
@@ -37,16 +35,31 @@ export const multiplayerSlice = createSlice({
         disconnect: (state, action: PayloadAction<Player>) => {
             state.connectedPlayers = state.connectedPlayers.filter(player => player.id !== action.payload.id);
         },
-        joinGame: (state, action: PayloadAction<{ gameId: string, username: string }>) => { 
+        joinGame: (state, action: PayloadAction<{ gameId: string, username: string }>) => {
             state.loggedInPlayer.team = PLAYER_O;
         },
         playerConnected: (state, action: PayloadAction<Player>) => {
             state.connectedPlayers.push(action.payload);
         },
+        playerDisconnected:  (state, action: PayloadAction<Player>) => {
+            state.connectedPlayers = state.connectedPlayers.filter(player => player.id !== action.payload.id);
+        },
         setUsername: (state, action: PayloadAction<string>) => {
             state.loggedInPlayer = {
                 username: action.payload
             };
+        },
+        sendMessage: (state, action: PayloadAction<string>) => {
+            state.messages.push({
+                sender: {
+                    id: state.loggedInPlayer.id!,
+                    username: state.loggedInPlayer.username!
+                },
+                message: action.payload
+            });
+        },
+        messageReceived: (state, action: PayloadAction<Message>) => {
+            state.messages.push(action.payload);
         }
     }
 });
@@ -54,8 +67,9 @@ export const multiplayerSlice = createSlice({
 export const MultiplayerActions = multiplayerSlice.actions;
 
 const getConnectedPlayers = (state: RootState) => state.multiplayer.connectedPlayers;
-const getLoggedInPlayer = (state: RootState) => state.multiplayer.loggedInPlayer;
 const getGameId = (state: RootState) => state.multiplayer.id;
+const getLoggedInPlayer = (state: RootState) => state.multiplayer.loggedInPlayer;
+const getMessages = (state: RootState) => state.multiplayer.messages;
 const getUsername = (state: RootState) => state.multiplayer.loggedInPlayer?.username;
 
 /* Implement selectors */
@@ -96,6 +110,7 @@ export const MultiplayerSelectors = {
     getIsCurrentPlayerConnected,
     getIsInMultiplayerGame,
     getLoggedInPlayer,
+    getMessages,
     getMultiplayerLayout,
     getUsername
 }

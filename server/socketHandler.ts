@@ -52,6 +52,11 @@ export function handleSocketMessage(socket: Socket, message: WebSocketMessage) {
             GameService.takeTurn(message.payload.gameId, message.payload.playerId, message.payload.board, message.payload.cell);
             break;
         }
+        case 'send_message': {
+            console.log('Sending message', message);
+            GameService.sendMessage(socket.data.gameId, socket.data.playerId, message.payload.message);
+            break;
+        }
         default:
             console.log('Unknown message type:', message.type);
     }

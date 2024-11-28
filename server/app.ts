@@ -3,6 +3,7 @@ import http from 'http';
 import cors from 'cors';
 import { Server } from 'socket.io';
 import { handleSocketMessage } from './socketHandler';
+import { playerDisconnected } from './gameService';
 
 const app = express();
 app.use(express.json());
@@ -32,6 +33,7 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('A client has disconnected');
+        playerDisconnected(socket);
     });
 });
 

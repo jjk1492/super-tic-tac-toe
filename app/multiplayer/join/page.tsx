@@ -5,6 +5,7 @@ import Username from "../components/Username";
 import { MultiplayerActions, MultiplayerSelectors } from "../state";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Container from "@/app/components/Container";
 
 export default function Page() {
     const dispatch = useAppDispatch();
@@ -33,11 +34,19 @@ export default function Page() {
     };
 
     return (
-        <div>
+        <Container>
             <h1>Join Game</h1>
-            <Username />
-            <input type="text" placeholder="Game ID" onChange={handleChangeGameId}/>
-            <button onClick={handleJoinGame}>Join Game</button>
-        </div>
+            <div className="mb-3">
+                <Username />
+            </div>
+
+            <div className="mb-3">
+                <label>
+                    <span>Enter the game ID</span>
+                    <input className="form-control" type="text" placeholder="Game ID" onChange={handleChangeGameId} />
+                </label>
+            </div>
+            <button className="btn btn-primary" onClick={handleJoinGame}>Join Game</button>
+        </Container >
     );
 }

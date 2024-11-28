@@ -10,9 +10,11 @@ function CreateGame() {
     return (
         <div>
             <h2>Create a game</h2>
-            <Username />
+            <div className="mb-3">
+                <Username />
+            </div>
 
-            <button onClick={handleCreateGame}>Create game</button>
+            <button className="btn btn-primary" onClick={handleCreateGame}>Create game</button>
         </div>
     );
 }
