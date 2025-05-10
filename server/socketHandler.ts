@@ -6,9 +6,7 @@ import { WebSocketMessage } from "./types";
 export function handleSocketMessage(socket: Socket, message: WebSocketMessage) {
     switch (message.type) {
         case 'create_game': {
-            console.log('Creating game', message);
             const { game, player } = GameService.createGame({ username: message.payload.username }, socket);
-            console.log('Game created:', game);
 
             socket.send(JSON.stringify({
                 type: 'game_created',
@@ -20,7 +18,6 @@ export function handleSocketMessage(socket: Socket, message: WebSocketMessage) {
             return;
         }
         case 'join_game': {
-            console.log('Joining game', message);
             try {
                 const { game, player } = GameService.joinGame(message.payload.gameId, { username: message.payload.username }, socket);
                 const opponent = GameService.getOpponent(player.id, game.id);
@@ -53,7 +50,6 @@ export function handleSocketMessage(socket: Socket, message: WebSocketMessage) {
             break;
         }
         case 'send_message': {
-            console.log('Sending message', message);
             GameService.sendMessage(socket.data.gameId, socket.data.playerId, message.payload.message);
             break;
         }

@@ -9,7 +9,6 @@ export type SingleGameBoard = AllPlayers[][];
 export type SolvedSuperGameBoard = (AllPlayers | null)[][];
 export type CellIdentifier = { row: number, col: number };
 
-
 export type Player = {
     id?: string;
     username?: string;
